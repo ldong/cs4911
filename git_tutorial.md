@@ -93,7 +93,7 @@ to add it the remote repo
 
 if this is the first time push a new branch to remote branch, in this case, there's no dev at the github. We have to use
 
-* `git push --set-upstream origin/dev dev &amp;&amp; git push`
+* `git push --set-upstream origin/dev dev && git push`
 
 * `git push origin dev`
 
