@@ -32,10 +32,12 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
+    'django.contrib.admin',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'WebPortal',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -57,8 +59,11 @@ WSGI_APPLICATION = 'HumorGenomeWebApp.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'humor_genome',
+	'HOST': '',
+	'USER': 'root',
+	'PASSWORD': 'password'
     }
 }
 
