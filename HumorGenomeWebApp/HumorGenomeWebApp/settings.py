@@ -62,8 +62,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'humor_genome',
 	'HOST': '',
-	'USER': 'root',
-	'PASSWORD': 'password'
+	'USER': 'django',
+	'PASSWORD': 'python27'
     }
 }
 
