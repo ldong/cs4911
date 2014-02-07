@@ -11,13 +11,16 @@ you'd like here. Once MySQL is installed, we now need to create a new user for t
 up your new SQL server: `mysql -u root -p`. Then, create the new user.
 
 ```
-CREATE USER 'django'@'localhost' IDENTIFIED BY '<PASSWORD>';
+CREATE USER 'django'@'localhost' IDENTIFIED BY 'python27';
 GRANT ALL PRIVILEGES ON *.* TO 'django'@'localhost' WITH GRANT OPTION;
 ```
 
 You now have a new user for the Django framework to use. The password and username don't matter here as long as they
-match what's found in the settings.py file of the project.
+match what's found in the settings.py file of the project. The last step here is simply to create the database.
 
+`CREATE DATABASE humor_genome;`
+
+Now you can exit MySQL (`\q`) and continue on to running the server.
 
 ### Running the Web Server
 The first time you run the server, you should first make sure that your database is in sync with the web server models.
