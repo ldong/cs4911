@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% for humorContent in humorContents %}
+<p>{{ humorContent.url }}</p>
+<p>{{ humorContent.title }}</p>
+<p>{{ humorContent.rating }}</p>
+<p>{{ humorContent.created }}</p>
+{% endfor %}
+{% endblock %}

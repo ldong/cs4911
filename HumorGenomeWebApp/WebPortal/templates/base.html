@@ -1,0 +1,86 @@
+<html lang="en">
+<head>
+<style type = "text/css">
+h1 {color:#7E8383;text-align: Left;
+    background-image: url(head.png);
+    -webkit-background-size: cover; 
+    -moz-background-size:cover;
+    -o-background-size:cover;
+    background-size: cover;	} 
+body {background-image: url(bg.png);
+    -webkit-background-size: cover; 
+    -moz-background-size:cover;
+    -o-background-size:cover;
+    background-size: cover;  }
+#loginPanel{ position: absolute;
+    top: 20px;
+    right: 56px;}
+#RememberMe { font-size: 70%;
+    position: absolute; }
+.LoginButton{ background-color: #EA9A90;}
+#prevButton{ position: absolute;
+    top:400px;
+    left: 50px; }
+#nextButton{ position: absolute;
+    top: 400px;
+    left: 770px; }
+</style> 
+
+<script>
+function OnPrevButton(x){
+    x.style.height= "75px";
+    x.style.width= "75px"; }
+function OutPrevButton(x){
+    x.style.height="50px";
+    x.style.width="50px";} 
+function OnNextButton(x){
+    x.style.height= "75px";
+    x.style.width= "75px";}
+function OutNextButton(x){
+    x.style.height="50px";
+    x.style.width="50px";}
+</script>
+</head>
+
+<body>
+<h1> Welcome to HumorGenome</h1> 
+
+<div id = "loginPanel">
+<form> 
+Username: <input type ="text" name = "username" size = "15" maxlength = "20"/> &nbsp;
+password: <input type="password" name = "pass" size = "15"/> &nbsp;
+          <input type = "submit" value = "Login" class = "LoginButton"/> </br> 
+</form>
+<form id = "RememberMe">
+RememberMe <input type="checkbox" name="RememberMe" value = "Remember me"/>
+</form>
+</div>
+
+<table >
+    <tr>
+    <td>
+    {% block content %}
+    {% endblock %}
+    </td>
+    </tr>	
+</table>
+
+<table id = "tail">
+    <tr>
+    <td><img style = "position: absolute; top:680px; right:10px;" src="tail.png" height ="40" width = "960"/></td>
+    </tr>	
+</table>
+
+<div id = "prevButton">	
+<img onmousemove="OnPrevButton(this)" onmouseout = "OutPrevButton(this)" boder = "0" src = "prev.png" alt = "Arrow" width = "50" height = "50" style = "opacity: 0.5; filter:alpha(opacity=40)">
+</div>
+<div id = "nextButton">	
+<img onmousemove="OnNextButton(this)" onmouseout = "OutNextButton(this)" boder = "0" src = "next.png" alt = "Arrow" width = "50" height = "50" style = "opacity: 0.5; filter:alpha(opacity=40)">
+</div>
+
+</body>
+</html>
+
+
+
+
