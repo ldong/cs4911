@@ -7,4 +7,7 @@ class HumorContent(models.Model):
 	rating = models.IntegerField()
 	created = models.DateTimeField()
 
-admin.site.register(HumorContent)
+class HumorContentAdmin(admin.ModelAdmin):
+    list_display = ('title', 'rating', 'created')
+
+admin.site.register(HumorContent, HumorContentAdmin)
