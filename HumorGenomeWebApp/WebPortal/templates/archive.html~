@@ -53,12 +53,14 @@ function OutNextButton(x) {
 {% block content %}
 <div id = "Object" class="CtrObj">
 
-<table>
-	<tr>
-		<td>
-			<img style = "position:absolute; top: 200px; left: 140px" src="{{ humorContent.url }}" height = "400" id="humorContent" onclick = "PrevCont()"/>
-		</td>
-	</tr>
+<table >
+
+		<tr>
+			<td>
+				<img style = "position:absolute; top: 200px; left: 140px" src="{{ humorContent.url }}" height = "400" id="humorContent" onclick = "PrevCont()"/>
+			</td>
+		</tr>	
+
 </table>
 
     <div id="rating" class="rating_widget">

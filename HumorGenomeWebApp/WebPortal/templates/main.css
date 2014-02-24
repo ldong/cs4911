@@ -1,0 +1,72 @@
+body { 
+	     background-color: #EAEAEA;
+	     -webkit-background-size: cover; 
+	     -moz-background-size:cover;
+	     -o-background-size:cover;
+	     background-size: cover;  
+}
+
+#the_footer{
+		padding: 40px;
+}
+
+#loginPanel{ 
+		 position: 	absolute;
+	     top: 		20px;
+		 right: 	56px;	
+}
+
+#RememberMe { 
+		 font-size: 70%;
+		 position:  absolute;
+}
+
+#main_section{
+		padding-top: 130px;
+		padding-left:130px;
+}
+#rating{
+		position: absolute;
+		top:  620px;
+		left: 200px;
+
+}
+#prevButton { 
+		 position: absolute;
+		 top: 	   400px;
+	     left: 	   50px;
+}
+						
+#nextButton{ 
+		 position: absolute;
+	     top: 	   400px;
+		 left: 	   770px;
+}
+
+.LoginButton{ 
+	     background-color: #EA9A90;
+}
+
+.CtrObj{		
+		height: 650px;	
+		width:	900px;
+		top: 50px;
+		left:30px;
+}
+
+.rating_widget{
+		 border:   0px solid #CCC;
+		 overflow: visible;
+		 padding:  0px;
+		 position: relative;
+		 width:    180px;
+		 height:   32px;
+}
+
+.total_votes{
+		 background: #EAEAEA
+		 top:        58px;
+		 left:       0;
+		 padding:    5px;
+		 position:   absolute;
+}
