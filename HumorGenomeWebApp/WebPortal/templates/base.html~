@@ -1,7 +1,6 @@
 <html lang="en">
 <head>
 <link rel="stylesheet" href="/media/css/main.css">
-<script src="http://code.jquery.com/jquery-latest.js"></script>
 <style>
 h1 {
 		color:#7E8383;text-align: Left;
@@ -11,23 +10,12 @@ h1 {
 		-o-background-size:cover;
 		background-size: cover;
 }
-
-.rating_star{
-		 background: url('/media/images/star_empty.png') no-repeat;
-		 float:	    left;
-		 height:    28px;
-		 padding: 	2px;
-		 width:		32px;
-}
-
-.ratings_vote{
-		 background:url('/media/images/star_full.png') no-repeat;
-}
-
-.ratings_over{
-		 background: url('/media/images/star_highlight.png') no-repeat;
-}
 </style>
+{% block styles %}
+{% endblock %}
+
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+<script src="/media/scripts/jquery.json-2.4.min.js"></script>
 <script>
 
 /**$(document).ready(function() {
@@ -111,13 +99,13 @@ h1 {
 <div id = "loginPanel">
 <form> 
 Username: <input type ="text" name = "username" size = "15" maxlength = "20"/> &nbsp;
-password: <input type="password" name = "pass" size = "15"/> &nbsp;
+Password: <input type="password" name = "pass" size = "15"/> &nbsp;
           <input type = "submit" value = "Login" class = "LoginButton"/> </br> 
 </form>
 <form id = "RememberMe">
-RememberMe <input type="checkbox" name="RememberMe" value = "Remember me"/>
+Remember Me <input type="checkbox" name="RememberMe" value = "Remember me"/>
 </form>
-</div>
+</div><br />
 
 <table >
     <tr>

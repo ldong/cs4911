@@ -1,4 +1,54 @@
 {% extends "base.html" %}
+{% block styles %}
+<style>
+.rating_star{
+		 background: url('/media/images/star_empty.png') no-repeat;
+		 float:	    left;
+		 height:    28px;
+		 padding: 	2px;
+		 width:		32px;
+}
+
+.ratings_vote{
+		 background:url('/media/images/star_full.png') no-repeat;
+}
+
+.ratings_over{
+		 background: url('/media/images/star_highlight.png') no-repeat;
+}
+
+
+/* #rating{
+		position: absolute;
+		top:  620px;
+		left: 200px;
+
+} */
+
+.rating_widget{
+		 border:   0px solid #CCC;
+		 overflow: visible;
+		 padding:  0px;
+		 position: relative;
+		 width:    180px;
+		 height:   32px;
+}
+
+.total_votes{
+		 background: #EAEAEA
+		 top:        58px;
+		 left:       0;
+		 padding:    5px;
+		 position:   absolute;
+}
+
+.CtrObj{
+		height: 650px;	
+		width:	900px;
+		padding: 50px 50px;
+}
+</style>
+{% endblock %}
 {% block scripts %}
 <script>
 var currentHumor = new Object();
@@ -52,34 +102,36 @@ function OutNextButton(x) {
 {% endblock %}
 {% block content %}
 <div id = "Object" class="CtrObj">
-
-<table>
-	<tr>
-		<td>
-			<img style = "position:absolute; top: 200px; left: 140px" src="{{ humorContent.url }}" height = "400" id="humorContent" onclick = "PrevCont()"/>
-		</td>
-	</tr>
-</table>
-
-    <div id="rating" class="rating_widget">
-	<div class="star_1 rating_star"></div>
-	<div class="star_1 rating_star"></div>
-	<div class="star_1 rating_star"></div>
-	<div class="star_1 rating_star"></div>
-	<div class="star_1 rating_star"></div>
-	<div class="total_vote">vote data will show here: </div>
-	</div>
-
-
-    <!-- adding the rating stars -->
-
-
-    <div id = "prevButton">	
-		<img onmousemove="OnPrevButton(this)" onmouseout = "OutPrevButton(this)" onclick="showPrev()" border = "0" src = "/media/images/prev.png" alt = "Arrow" width = "50" height = "50" style = "opacity: 0.5; filter:alpha(opacity=40)">
-	</div>
-
-	<div id = "nextButton">	
-		<img onmousemove="OnNextButton(this)" onmouseout = "OutNextButton(this)" onclick="showNext()" border = "0" src = "/media/images/next.png" alt = "Arrow" width = "50" height = "50" style = "opacity: 0.5; filter:alpha(opacity=40)">
-	</div>
+	<table>
+		<tr>
+			<td>
+				<div id = "prevButton">	
+					<img onmousemove="OnPrevButton(this)" onmouseout = "OutPrevButton(this)" onclick="showPrev()" border = "0" src = "/media/images/prev.png" alt = "Arrow" width = "50" height = "50" style = "opacity: 0.5; filter:alpha(opacity=40)">
+				</div>
+			</td>
+			<td>
+				<img src="{{ humorContent.url }}" height = "400" id="humorContent"/>
+			</td>
+			<td>
+				<div id = "nextButton">	
+					<img onmousemove="OnNextButton(this)" onmouseout = "OutNextButton(this)" onclick="showNext()" border = "0" src = "/media/images/next.png" alt = "Arrow" width = "50" height = "50" style = "opacity: 0.5; filter:alpha(opacity=40)">
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td></td>
+			<td>
+				<div id="rating" class="rating_widget">
+					<div class="star_1 rating_star"></div>
+					<div class="star_1 rating_star"></div>
+					<div class="star_1 rating_star"></div>
+					<div class="star_1 rating_star"></div>
+					<div class="star_1 rating_star"></div>
+					<div class="total_vote">vote data will show here: </div>
+				</div>
+			</td>
+			<td></td>
+		</tr>
+	</table>    	
 </div>
 {% endblock %}
