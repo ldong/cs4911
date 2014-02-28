@@ -14,81 +14,8 @@ h1 {
 {% block styles %}
 {% endblock %}
 
-<script src="http://code.jquery.com/jquery-latest.js"></script>
+<script src="/media/scripts/jquery.js"></script>
 <script src="/media/scripts/jquery.json-2.4.min.js"></script>
-<script>
-
-/**$(document).ready(function() {
-        
-        $('.rating_widget').each(function(i) {
-            var widget = this;
-            var out_data = {
-                widget_id : $(widget).attr('id'),
-                fetch: 1
-            };
-            $.post(
-                'ratings.php',
-                out_data,
-                function(INFO) {
-                    $(widget).data( 'fsr', INFO );
-                    set_votes(widget);
-                },
-                'json'
-            );
-        });
-    
-
-        $('.rating_star').hover(
-            // Handles the mouseover
-            function() {
-                $(this).prevAll().andSelf().addClass('ratings_over');
-                $(this).nextAll().removeClass('ratings_vote'); 
-            },
-            // Handles the mouseout
-            function() {
-                $(this).prevAll().andSelf().removeClass('ratings_over');
-                // can't use 'this' because it wont contain the updated data
-                set_votes($(this).parent());
-            }
-        );
-        
-        
-        // This actually records the vote
-        $('.rating_star').bind('click', function() {
-            var star = this;
-            var widget = $(this).parent();
-            
-            var clicked_data = {
-                clicked_on : $(star).attr('class'),
-                widget_id : $(star).parent().attr('id')
-            };
-            $.post(
-                'ratings.php',
-                clicked_data,
-                function(INFO) {
-                    widget.data( 'fsr', INFO );
-                    set_votes(widget);
-                },
-                'json'
-            ); 
-        });
-        
-        
-        
-    });
-	function set_votes(widget) {
-
-        var avg = $(widget).data('fsr').whole_avg;
-        var votes = $(widget).data('fsr').number_votes;
-        var exact = $(widget).data('fsr').dec_avg;
-    
-        window.console && console.log('and now in set_votes, it thinks the fsr is ' + $(widget).data('fsr').number_votes);
-        
-        $(widget).find('.star_' + avg).prevAll().andSelf().addClass('ratings_vote');
-        $(widget).find('.star_' + avg).nextAll().removeClass('ratings_vote'); 
-        $(widget).find('.total_votes').text( votes + ' votes recorded (' + exact + ' rating)' );
-    }**/
-</script>
 {% block scripts %}
 {% endblock %}
 </head>
@@ -97,14 +24,17 @@ h1 {
 <h1> Welcome to HumorGenome</h1> 
 
 <div id = "loginPanel">
-<form> 
+{% if user.is_authenticated %}
+<form method="post" action="logout">{% csrf_token %}
+	<input type="submit" value="Logout" class="LoginButton"/>
+</form>
+{% else %}
+<form method="post" action="login">{% csrf_token %} 
 Username: <input type ="text" name = "username" size = "15" maxlength = "20"/> &nbsp;
-Password: <input type="password" name = "pass" size = "15"/> &nbsp;
+Password: <input type="password" name = "password" size = "15"/> &nbsp;
           <input type = "submit" value = "Login" class = "LoginButton"/> </br> 
 </form>
-<form id = "RememberMe">
-Remember Me <input type="checkbox" name="RememberMe" value = "Remember me"/>
-</form>
+{% endif %}
 </div>
 
 <table >

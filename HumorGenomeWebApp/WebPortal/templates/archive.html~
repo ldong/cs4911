@@ -45,7 +45,7 @@
 .CtrObj{
 		height: 650px;	
 		width:	900px;
-		padding: 10px 10px 10px 10px;
+		padding: 50px 50px;
 }
 </style>
 {% endblock %}
@@ -59,23 +59,39 @@ function init(){
 	currentHumor.url = '{{ humorContent.url }}';
 	currentHumor.title = '{{ humorContent.title }}';
 	currentHumor.created = '{{ humorContent.created }}';
+	currentHumor.avgRating = {{ humorContent.avgRating }};
+	currentHumor.numRatings = {{ humorContent.numRatings }};
+	{% if rating %}
+	currentHumor.rating = {{rating}};
+	{% else %}
+	currentHumor.rating = 0;
+	{% endif %}
+
+}
+
+function updateImage(result){
+	currentHumor.id = result.id;
+	currentHumor.url = result.url;
+	currentHumor.title = result.title;
+	currentHumor.numRatings = result.numRatings;
+	if(result.rating)
+		currentHumor.rating = result.rating;
+	else
+		currentHumor.rating = 0;
+	currentHumor.avgRating = result.avgRating;
+	$('img#humorContent').attr('src', currentHumor.url);
+	set_votes($('.rating_widget'));
 }
 
 function showNext() {
 	$.get('getNextHumor', {id : currentHumor.id}, function(result) {
-			currentHumor.id = result.id;
-			currentHumor.url = result.url;
-			currentHumor.title = result.title;
-			$('img#humorContent').attr('src', currentHumor.url);
+		updateImage(result);
 	});
 }
 
 function showPrev() {
 	$.get('getPrevHumor', {id : currentHumor.id}, function(result) {
-			currentHumor.id = result.id;
-			currentHumor.url = result.url;
-			currentHumor.title = result.title;
-			$('img#humorContent').attr('src', currentHumor.url);
+		updateImage(result);
 	});
 }
 
@@ -98,9 +114,54 @@ function OutNextButton(x) {
     x.style.height="50px";
     x.style.width="50px";
 }
+
+function set_votes(widget) {
+	$(widget).find('.ratings_vote').removeClass('ratings_vote');
+	var rating = currentHumor.rating;
+	var avg = currentHumor.avgRating;
+	var numRatings = currentHumor.numRatings;
+
+    $(widget).find('.star_' + rating).prevAll().andSelf().addClass('ratings_vote');
+    $(widget).find('.star_' + rating).nextAll().removeClass('ratings_vote'); 
+    $(widget).find('span#totalNum').text(numRatings);
+	$(widget).find('span#avgVote').text(avg);
+}
+
+$(document).ready(function() {	
+	set_votes($('.rating_widget'));
+
+    $('.rating_star').hover(
+        // Handles the mouseover
+        function() {
+            $(this).prevAll().andSelf().addClass('ratings_over');
+            $(this).nextAll().removeClass('ratings_vote'); 
+        },
+        // Handles the mouseout
+        function() {
+            $(this).prevAll().andSelf().removeClass('ratings_over');
+            // can't use 'this' because it wont contain the updated data
+            set_votes($(this).parent());
+        }
+    );
+    
+    
+    // This actually records the vote
+   $('.rating_star').bind('click', function() {
+		var givenRating = $(this).attr('value');
+        var widget = $(this).parent();
+		$.get('submitRating', {id : currentHumor.id, rating: givenRating}, function(result) {
+			console.log(result);
+			currentHumor.avgRating = result.avgRating;
+			currentHumor.numRatings = result.numRatings;
+			currentHumor.rating = result.rating;
+			set_votes(widget);
+		});
+    });
+});
 </script>
 {% endblock %}
 {% block content %}
+{{ user.username }}
 <div id = "Object" class="CtrObj">
 	<table>
 		<tr>
@@ -122,12 +183,13 @@ function OutNextButton(x) {
 			<td></td>
 			<td>
 				<div id="rating" class="rating_widget">
-					<div class="star_1 rating_star"></div>
-					<div class="star_1 rating_star"></div>
-					<div class="star_1 rating_star"></div>
-					<div class="star_1 rating_star"></div>
-					<div class="star_1 rating_star"></div>
-					<div class="total_vote">vote data will show here: </div>
+					<div value="1" class="star_1 rating_star"></div>
+					<div value="2" class="star_2 rating_star"></div>
+					<div value="3" class="star_3 rating_star"></div>
+					<div value="4" class="star_4 rating_star"></div>
+					<div value="5" class="star_5 rating_star"></div>
+					<div class="total_vote">Total Votes:  <span id="totalNum"></span></div>
+					<div class="avg_vote">Average Vote:  <span id="avgVote"></span></div>
 				</div>
 			</td>
 			<td></td>
