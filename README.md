@@ -37,5 +37,10 @@ Now you can navigate to the URL given as output to view the web portal. To view 
 branch. (e.g. `http://localhost:8000/admin`). From here, you can access the administrator CRUD for all of the objects
 in the database.
 
-### Example GUI
-You can find an example GUI at the following location: http://www.prism.gatech.edu/~qguo8/
+### Notes
+
+When you first start the application, the database will be empty (when the server is deployed, the database will persist).
+To get around this, navigate to the admin portal and add a few objects to the database. As of right now, the registration
+page has not been added. So, you can add some users manually through the admin portal as well (the admin login itself
+will work for the regular site too). After this, you can navigate to the main page (`http://localhost:8000/WebPortal/`).
+From here, you should be able to login, rate the humor content you just added, and navigate between each of them.
