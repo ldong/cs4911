@@ -44,3 +44,10 @@ To get around this, navigate to the admin portal and add a few objects to the da
 page has not been added. So, you can add some users manually through the admin portal as well (the admin login itself
 will work for the regular site too). After this, you can navigate to the main page (`http://localhost:8000/WebPortal/`).
 From here, you should be able to login, rate the humor content you just added, and navigate between each of them.
+
+### MAC users
+
+1. install virtualenvwrapper, django
+2. brew install mysql
+3. [Setting up mysql] (README.md#setting-up-mysql)
+4  Add contents mannually
