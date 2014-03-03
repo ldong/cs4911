@@ -48,6 +48,10 @@ From here, you should be able to login, rate the humor content you just added, a
 ### MAC users
 
 1. install virtualenvwrapper, django
+
 2. brew install mysql
+
 3. [Setting up mysql] (README.md#setting-up-mysql)
+
 4  Add contents mannually
+
