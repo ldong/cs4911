@@ -53,5 +53,5 @@ From here, you should be able to login, rate the humor content you just added, a
 
 3. [Setting up mysql] (README.md#setting-up-mysql)
 
-4  Add contents mannually
+4. Add humor contents mannually before view the web portal
 
