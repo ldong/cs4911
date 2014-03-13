@@ -26,6 +26,9 @@ TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = []
 
+# Provide get_profile() for authentication
+AUTH_PROFILE_MODULE = 'regularUser.RegularUser'
+
 # Application definition
 
 INSTALLED_APPS = (

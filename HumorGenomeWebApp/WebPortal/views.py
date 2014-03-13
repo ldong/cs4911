@@ -1,12 +1,14 @@
 from django.shortcuts import render, render_to_response
 from django.template import loader, Context, RequestContext
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.utils import simplejson
 from django.core.context_processors import csrf
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
-from WebPortal.models import HumorContent, Rating
+from django.contrib.auth.models import User
+from WebPortal.models import HumorContent, Rating, RegularUser
+from WebPortal.forms import RegistrationForm
 
 def archive(request):
 	humorContents = HumorContent.objects.order_by('id');
@@ -119,3 +121,23 @@ def getPrevHumor(request):
 
 		return HttpResponse(simplejson.dumps(result), content_type='application/json');
 	return HttpResponse("BAD");
+
+## Registration Related ##
+def regularuserRegistration(request):
+	if request.user.is_authenticated():
+		return HttpResponseRedirect('/profile/')
+	if request.method == 'POST':
+		form = RegistrationForm(request.POST)
+		if form.is_valid():
+			user = User.objects.create_user(username=form.cleaned_data['username'], email = form.cleaned_data['email'], password = form.cleaned_data['password'])
+			user.save()
+			regularuser = RegularUser(user=user, name=form.cleaned_data['name'], birthday=form.cleaned_data['birthday'])
+			regularuser.save()
+			return HttpResponseRedirect('/profile')
+		else:
+			return render_to_response('register.html', {'form': form}, context_instance=RequestContext(request))
+	else:
+		''' user is not submitting the form, show them a blank registration form '''
+		form = RegistrationForm()
+		context = {'form': form}
+		return render_to_response('register.html', context, context_instance=RequestContext(request))
