@@ -87,3 +87,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/media/'
+
+# Email Settings
+
+EMAIL_HOST = 'localhost'
+EMAIL_PORT = 1025
