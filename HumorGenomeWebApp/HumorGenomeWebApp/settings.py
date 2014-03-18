@@ -87,3 +87,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/media/'
+
+# Email Settings : To get the email output on a terminal use the following command
+# python -m smtpd -n -c DebuggingServer localhost:1025
+# https://docs.djangoproject.com/en/dev/topics/email/
+
+EMAIL_HOST = 'localhost'
+EMAIL_PORT = 1025

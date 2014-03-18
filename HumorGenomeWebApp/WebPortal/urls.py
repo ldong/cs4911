@@ -1,5 +1,6 @@
 from django.conf.urls import *
 from WebPortal.views import *
+from django.contrib.auth import views as auth_views
 
 urlpatterns = patterns('',
     url(r'^$',archive),
@@ -9,4 +10,9 @@ urlpatterns = patterns('',
     url(r'^logout', logout),
     url(r'^submitRating', submitRating),
     url(r'^register/', regularuserRegistration),
+    url(r'^resetpassword/passwordsent/', auth_views.password_reset_done, name='password_reset_done'),
+    url(r'^resetpassword/', auth_views.password_reset, name='password_reset'),
+    url(r'^reset/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/', auth_views.password_reset_confirm, name='password_reset_confirm'),
+    url(r'^reset/done/', auth_views.password_reset_complete, name='password_reset_complete'),
+    
 )
