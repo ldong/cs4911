@@ -2,21 +2,20 @@
 {% block styles %}
 <style>
 .rating_star{
-		 background: url('/media/images/star_empty.png') no-repeat;
-		 float:	    left;
-		 height:    28px;
-		 padding: 	2px;
-		 width:		32px;
+	 background: url('/media/images/star_empty.png') no-repeat;
+	 float:	    left;
+	 height:    28px;
+	 padding: 	2px;
+	 width:		32px;
 }
 
 .ratings_vote{
-		 background:url('/media/images/star_full.png') no-repeat;
+	background:url('/media/images/star_full.png') no-repeat;
 }
 
 .ratings_over{
-		 background: url('/media/images/star_highlight.png') no-repeat;
+	background: url('/media/images/star_highlight.png') no-repeat;
 }
-
 
 /* #rating{
 		position: absolute;
@@ -26,33 +25,37 @@
 } */
 
 .rating_widget{
-		 border:   0px solid #CCC;
-		 overflow: visible;
-		 padding:  0px;
-		 position: relative;
-		 width:    180px;
-		 height:   32px;
+	 border:   0px solid #CCC;
+	 overflow: visible;
+	 padding:  0px;
+	 position: relative;
+	 width:    180px;
+	 height:   32px;
 }
 
 .total_votes{
-		 background: #EAEAEA
-		 top:        58px;
-		 left:       0;
-		 padding:    5px;
-		 position:   absolute;
+	 background: #EAEAEA
+	 top:        58px;
+	 left:       0;
+	 padding:    5px;
+	 position:   absolute;
 }
 
 .CtrObj{
-		height: 650px;	
-		width:	900px;
-		padding: 50px 50px;
+	height: 650px;	
+	width:	900px;
+	padding: 50px 50px;
 }
 </style>
 {% endblock %}
 {% block scripts %}
 <script>
 var currentHumor = new Object();
-init();
+
+function addOverlay() {
+	var modal = $('#addModal')[0];
+	modal.style.visibility = (modal.style.visibility == "visible") ? "hidden" : "visible";
+}
 
 function init(){
 	currentHumor.id = {{ humorContent.id }};
@@ -67,19 +70,27 @@ function init(){
 	currentHumor.rating = 0;
 	{% endif %}
 
+	if('{{ flag }}' == 'True')
+		currentHumor.flag = true;
+	else
+		currentHumor.flag = false;
 }
 
 function updateImage(result){
-	currentHumor.id = result.id;
-	currentHumor.url = result.url;
-	currentHumor.title = result.title;
-	currentHumor.numRatings = result.numRatings;
+	currentHumor = result;
+
 	if(result.rating)
 		currentHumor.rating = result.rating;
 	else
 		currentHumor.rating = 0;
-	currentHumor.avgRating = result.avgRating;
 	$('img#humorContent').attr('src', currentHumor.url);
+	$('span#createdBy').text(currentHumor.createdBy);
+	
+	if(currentHumor.flag)
+		$('#flagButton').text('Unflag')
+	else
+		$('#flagButton').text('Flag')
+
 	set_votes($('.rating_widget'));
 }
 
@@ -116,10 +127,12 @@ function OutNextButton(x) {
 }
 
 function set_votes(widget) {
+	console.log('hey');
 	$(widget).find('.ratings_vote').removeClass('ratings_vote');
 	var rating = currentHumor.rating;
 	var avg = currentHumor.avgRating;
 	var numRatings = currentHumor.numRatings;
+	console.log(rating);
     
 	if(rating == 0)
 		rating = avg;
@@ -133,7 +146,13 @@ function set_votes(widget) {
 }
 
 $(document).ready(function() {	
+	init();
 	set_votes($('.rating_widget'));
+	
+	if(currentHumor.flag)
+		$('#flagButton').text('Unflag')
+	else
+		$('#flagButton').text('Flag')
 
     $('.rating_star').hover(
         // Handles the mouseover
@@ -148,6 +167,15 @@ $(document).ready(function() {
             set_votes($(this).parent());
         }
     );
+
+	$('#flagButton').bind('click', function() {
+		$.get('flagContent', {id: currentHumor.id}, function(result) {});
+		var cur = $('#flagButton').text();
+		if(cur == 'Flag')
+			$('#flagButton').text('Unflag')
+		else
+			$('#flagButton').text('Flag')
+	});
     
     
     // This actually records the vote
@@ -155,7 +183,6 @@ $(document).ready(function() {
 		var givenRating = $(this).attr('value');
         var widget = $(this).parent();
 		$.get('submitRating', {id : currentHumor.id, rating: givenRating}, function(result) {
-			console.log(result);
 			currentHumor.avgRating = result.avgRating;
 			currentHumor.numRatings = result.numRatings;
 			currentHumor.rating = result.rating;
@@ -166,7 +193,22 @@ $(document).ready(function() {
 </script>
 {% endblock %}
 {% block content %}
-{{ user.username }}
+
+<div id="addModal" class="overlay">
+	<div>
+		<form method="post" action="addContent">{% csrf_token %} 
+			Title: <input type ="text" name = "title" size = "15" /><br />
+			URL: <input type="text" name = "url" size = "15"/><br />
+			<input type = "submit" value = "Submit" class = "LoginButton"/>
+		</form>
+		<button id="close" onclick="addOverlay()" class="LoginButton">Cancel</button>
+	</div>
+</div>
+
+{% if user.is_authenticated %}
+<button href="#" onclick='addOverlay()' class="LoginButton">Add content</button>
+{% endif %}
+
 <div id = "Object" class="CtrObj">
 	<table>
 		<tr>
@@ -185,6 +227,9 @@ $(document).ready(function() {
 			</td>
 		</tr>
 		<tr>
+			Created By: <span id="createdBy">{{ humorContent.createdBy }}</span>
+		</tr>
+		<tr>
 			<td></td>
 			<td>
 				<div id="rating" class="rating_widget">
@@ -197,7 +242,9 @@ $(document).ready(function() {
 					<div class="avg_vote">Average Vote:  <span id="avgVote"></span></div>
 				</div>
 			</td>
-			<td></td>
+			{% if user.is_authenticated %}
+			<td><button id="flagButton">Flag</button></td>
+			{% endif %}
 		</tr>
 	</table>    	
 </div>

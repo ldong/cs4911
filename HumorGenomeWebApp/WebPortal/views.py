@@ -6,6 +6,7 @@ from django.core.context_processors import csrf
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
+from django.contrib.auth.models import User
 from WebPortal.models import HumorContent, Rating
 
 def archive(request):
@@ -19,6 +20,7 @@ def archive(request):
 		if(len(myRating) > 0):
 			myRating = myRating[0];
 			c.update({'rating': myRating.rating});
+			c.update({'flag': myRating.flag});
 
 	t = loader.get_template("archive.html")
 	#c.update(csrf(request))
@@ -43,7 +45,50 @@ def login(request):
 	if user is not None:
 		if user.is_active:
 			auth_login(request, user) #todo - bad login logic later
+
+	if(request.user.is_authenticated()):
+		myRating = Rating.objects.filter(user=user).filter(humor=mostRecent);
+		if(len(myRating) > 0):
+			myRating = myRating[0];
+			c.update({'rating': myRating.rating});
+			c.update({'flag': myRating.flag});
+
 	return HttpResponse(t.render(c))
+
+def flagContent(request):
+	if(request.GET.get('id') and request.user):
+		myId = int(request.GET.get('id'));
+		curUser = request.user;
+		humorContent = HumorContent.objects.get(pk=myId);
+		myRating = Rating.objects.filter(user=curUser).filter(humor=humorContent);
+		
+		if(len(myRating) > 0): #rating exists
+			myRating = myRating[0];
+			myRating.flag = not myRating.flag;
+
+			if(myRating.flag):
+				humorContent.numFlags += 1;
+			else:
+				humorContent.numFlags -= 1;
+			
+			myRating.save();
+		else: #new rating
+			print 'hey1'
+			myRating = Rating();
+			print 'hey1'
+			myRating.user = curUser;
+			myRating.humor = humorContent;
+			humorContent.numFlags = humorContent.numFlags + 1;
+			myRating.save();
+			print 'hey'
+
+		if(humorContent.numRatings != 0):
+			humorContent.flagRatio = (humorContent.numFlags)/humorContent.numRatings;
+		else:
+			humorContent.flagRatio = 99;
+		humorContent.save();
+		return HttpResponse("OKAY");
+	return HttpResponse("BAD");
 
 def submitRating(request):
 	if(request.GET.get('id') and request.user):
@@ -60,7 +105,13 @@ def submitRating(request):
 			myRating = myRating[0];
 			oldRating = myRating.rating;
 			myRating.rating = newRating;
-			newAverage = ((oldAverage * weight) + newRating - oldRating) / (humorContent.numRatings);
+
+			if(oldRating is not None):
+				newAverage = ((oldAverage * weight) + newRating - oldRating) / (humorContent.numRatings);
+			else:
+				newAverage = ((oldAverage * weight) + newRating) / (humorContent.numRatings + 1);
+				humorContent.numRatings = humorContent.numRatings + 1;
+
 			myRating.save();
 		else: #first rating from this user
 			myRating = Rating(rating=newRating);
@@ -87,16 +138,39 @@ def getNextHumor(request):
 		result.update({'url': desiredHumor.url});
 		result.update({'title': desiredHumor.title});
 		result.update({'avgRating': desiredHumor.avgRating});
-		result.update({'numRatings': desiredHumor.numRatings});
+		result.update({'numRatings': desiredHumor.numRatings});		
+		result.update({'createdBy': desiredHumor.createdBy.username});
 		
 		if(request.user.is_authenticated()):
 			curUser = request.user;
 			myRating = Rating.objects.filter(user=curUser).filter(humor=desiredHumor);
 			if(len(myRating) > 0):
-				result.update({'rating': myRating[0].rating});			
+				result.update({'rating': myRating[0].rating});
+				result.update({'flag': myRating[0].flag});			
 
 		return HttpResponse(simplejson.dumps(result), content_type='application/json');
 	return HttpResponse("BAD");
+
+def register(request):
+	t = loader.get_template("archive.html")
+	user = User.objects.create_user(request.POST['username'], request.POST['email'], request.POST['password']);
+	user.save();
+	humorContents = HumorContent.objects.order_by('id'); #do I have to login?
+	mostRecent = humorContents[len(humorContents) - 1];
+	user = authenticate(username=request.POST['username'], password=request.POST['password'])
+	c = RequestContext(request, { 'humorContent': mostRecent });
+	if user is not None:
+		if user.is_active:
+			auth_login(request, user)
+	return HttpResponse(t.render(c))
+	
+
+def addContent(request):
+	t = loader.get_template("archive.html")
+	newContent = HumorContent(title=request.POST['title'], url=request.POST['url'], createdBy=request.user);
+	newContent.save();
+	c = RequestContext(request, { 'humorContent': newContent });
+	return HttpResponse(t.render(c))
 
 def getPrevHumor(request):
 	if(request.GET.get('id')):
@@ -110,12 +184,14 @@ def getPrevHumor(request):
 		result.update({'title': desiredHumor.title});
 		result.update({'avgRating': desiredHumor.avgRating});
 		result.update({'numRatings': desiredHumor.numRatings});
+		result.update({'createdBy': desiredHumor.createdBy.username});
 		
 		if(request.user.is_authenticated()):
 			curUser = request.user;
 			myRating = Rating.objects.filter(user=curUser).filter(humor=desiredHumor);
 			if(len(myRating) > 0):
 				result.update({'rating': myRating[0].rating});
+				result.update({'flag': myRating[0].flag});
 
 		return HttpResponse(simplejson.dumps(result), content_type='application/json');
 	return HttpResponse("BAD");

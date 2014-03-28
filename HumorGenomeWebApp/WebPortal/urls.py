@@ -7,5 +7,8 @@ urlpatterns = patterns('',
     url(r'^getPrevHumor/', getPrevHumor),
     url(r'^login', login),
     url(r'^logout', logout),
+    url(r'^addContent', addContent),
+    url(r'^register', register),
     url(r'^submitRating', submitRating),
+	url(r'^flagContent', flagContent),
 )
