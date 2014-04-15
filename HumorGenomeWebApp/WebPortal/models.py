@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from datetime import datetime
 
 class Rating(models.Model):
-	rating = models.IntegerField(default=0);
+	rating = models.IntegerField();
 	user = models.ForeignKey(User);
 	humor = models.ForeignKey('HumorContent');
 	flag = models.BooleanField(default=False);
@@ -31,18 +31,3 @@ class RatingAdmin(admin.ModelAdmin):
 
 admin.site.register(Rating, RatingAdmin)
 admin.site.register(HumorContent, HumorContentAdmin)
-
-## User models ##
-
-class RegularUser(models.Model):
-	user		= models.OneToOneField(User)
-	name		= models.CharField(max_length=100)
-	birthday	= models.DateField()
-
-	def __unicode__(self):
-		return self.name # This returns the name of User object
-
-# create our user object to attach to our RegularUser object
-#def create_regularuser_callback(sender, instance, **kwargs):
-#	regularuser, new = RegularUser.objects.get_or_create(user=instance)
-#post_save.connect(create_regularuser_callback, User)

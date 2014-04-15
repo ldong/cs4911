@@ -7,8 +7,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.models import User
-from WebPortal.models import HumorContent, Rating, RegularUser
-from WebPortal.forms import RegistrationForm
+from WebPortal.models import HumorContent, Rating
 
 def archive(request):
 	humorContents = HumorContent.objects.order_by('id');
@@ -62,7 +61,7 @@ def flagContent(request):
 		curUser = request.user;
 		humorContent = HumorContent.objects.get(pk=myId);
 		myRating = Rating.objects.filter(user=curUser).filter(humor=humorContent);
-		
+		print "hey1"
 		if(len(myRating) > 0): #rating exists
 			myRating = myRating[0];
 			myRating.flag = not myRating.flag;
@@ -74,14 +73,13 @@ def flagContent(request):
 			
 			myRating.save();
 		else: #new rating
-			print 'hey1'
 			myRating = Rating();
-			print 'hey1'
 			myRating.user = curUser;
 			myRating.humor = humorContent;
+			myRating.flag = True;
+			myRating.rating = 0;
 			humorContent.numFlags = humorContent.numFlags + 1;
 			myRating.save();
-			print 'hey'
 
 		if(humorContent.numRatings != 0):
 			humorContent.flagRatio = (humorContent.numFlags)/humorContent.numRatings;
@@ -106,8 +104,7 @@ def submitRating(request):
 			myRating = myRating[0];
 			oldRating = myRating.rating;
 			myRating.rating = newRating;
-
-			if(oldRating is not None):
+			if(oldRating is not None and int(oldRating) != 0):
 				newAverage = ((oldAverage * weight) + newRating - oldRating) / (humorContent.numRatings);
 			else:
 				newAverage = ((oldAverage * weight) + newRating) / (humorContent.numRatings + 1);
@@ -216,23 +213,3 @@ def getPrevHumor(request):
 
 		return HttpResponse(simplejson.dumps(result), content_type='application/json');
 	return HttpResponse("BAD");
-
-## Registration Related ##
-def regularuserRegistration(request):
-	if request.user.is_authenticated():
-		return HttpResponseRedirect('/profile/')
-	if request.method == 'POST':
-		form = RegistrationForm(request.POST)
-		if form.is_valid():
-			user = User.objects.create_user(username=form.cleaned_data['username'], email = form.cleaned_data['email'], password = form.cleaned_data['password'])
-			user.save()
-			regularuser = RegularUser(user=user, name=form.cleaned_data['name'], birthday=form.cleaned_data['birthday'])
-			regularuser.save()
-			return HttpResponseRedirect('/profile')
-		else:
-			return render_to_response('register.html', {'form': form}, context_instance=RequestContext(request))
-	else:
-		''' user is not submitting the form, show them a blank registration form '''
-		form = RegistrationForm()
-		context = {'form': form}
-		return render_to_response('register.html', context, context_instance=RequestContext(request))
