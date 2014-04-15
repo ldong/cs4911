@@ -131,16 +131,24 @@ def submitRating(request):
 def getNextHumor(request):
 	if(request.GET.get('id')):
 		humorContents = HumorContent.objects.order_by('id');
-		idNumber = int(request.GET.get('id'));
-		nextId = ((idNumber) % len(humorContents));
-		desiredHumor = humorContents[nextId];
+		index = 0;
+
+		for i, j in enumerate(humorContents):
+			if j.id == int(request.GET.get('id')):
+				index = i;
+
+		nextIndex = index + 1;
+		nextIndex = ((nextIndex) % len(humorContents));
+		desiredHumor = humorContents[nextIndex];
 		result = {}
 		result.update({'id': desiredHumor.id});
 		result.update({'url': desiredHumor.url});
 		result.update({'title': desiredHumor.title});
 		result.update({'avgRating': desiredHumor.avgRating});
 		result.update({'numRatings': desiredHumor.numRatings});		
-		result.update({'createdBy': desiredHumor.createdBy.username});
+		result.update({'createdBy': desiredHumor.createdBy.username});		
+		result.update({'msg': desiredHumor.message});		
+		result.update({'contentType': desiredHumor.contentType});
 		
 		if(request.user.is_authenticated()):
 			curUser = request.user;
@@ -168,7 +176,11 @@ def register(request):
 
 def addContent(request):
 	t = loader.get_template("archive.html")
-	newContent = HumorContent(title=request.POST['title'], url=request.POST['url'], createdBy=request.user);
+	newContent = HumorContent(contentType=request.POST['content_type'],title=request.POST['title'], createdBy=request.user);
+	if (newContent.contentType=="Text"):
+		newContent.message=request.POST['url'];
+	else:
+		newContent.url=request.POST['url'];
 	newContent.save();
 	c = RequestContext(request, { 'humorContent': newContent });
 	return HttpResponse(t.render(c))
@@ -176,16 +188,24 @@ def addContent(request):
 def getPrevHumor(request):
 	if(request.GET.get('id')):
 		humorContents = HumorContent.objects.order_by('id');
-		idNumber = int(request.GET.get('id')) - 2;
-		prevId = ((idNumber) % len(humorContents));
-		desiredHumor = humorContents[prevId];
+		index = 0;
+
+		for i, j in enumerate(humorContents):
+			if j.id == int(request.GET.get('id')):
+				index = i;
+
+		nextIndex = index - 1;
+		nextIndex = ((nextIndex) % len(humorContents));
+		desiredHumor = humorContents[nextIndex];
 		result = {}
 		result.update({'id': desiredHumor.id})
 		result.update({'url': desiredHumor.url})
 		result.update({'title': desiredHumor.title});
 		result.update({'avgRating': desiredHumor.avgRating});
 		result.update({'numRatings': desiredHumor.numRatings});
-		result.update({'createdBy': desiredHumor.createdBy.username});
+		result.update({'createdBy': desiredHumor.createdBy.username});		
+		result.update({'msg': desiredHumor.message});		
+		result.update({'contentType': desiredHumor.contentType});
 		
 		if(request.user.is_authenticated()):
 			curUser = request.user;
