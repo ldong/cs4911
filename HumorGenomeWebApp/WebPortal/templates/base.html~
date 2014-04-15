@@ -15,7 +15,7 @@
 }
 
 .overlay div {
-	width: 300px;
+	width: 450px;
 	margin: 100px auto;
 	background-color: #fff;
 	border: 1px solid #000;
@@ -26,12 +26,12 @@
 }
 
 h1 {
-		color:#7E8383;text-align: Left;
-		background-image: url(/media/images/head.png);
-		-webkit-background-size: cover; 
-		-moz-background-size:cover;
-		-o-background-size:cover;
-		background-size: cover;
+	color:#7E8383;text-align: Left;
+	background-image: url(/media/images/head.png);
+	-webkit-background-size: cover; 
+	-moz-background-size:cover;
+	-o-background-size:cover;
+	background-size: cover;
 }
 </style>
 {% block styles %}
@@ -93,7 +93,7 @@ Password: <input type="password" name = "password" size = "15"/> &nbsp;
 <table id = "tail">
 		<tr>
 			<td>
-				<img style = "position: absolute; top:680px; right:10px;" src="/media/images/tail.png" height ="40" width = "960"/>
+				<img style = "position: absolute; right:10px;" src="/media/images/tail.png" height ="40" width = "960"/>
 			</td>
 		</tr>	
 </table>

@@ -1,12 +1,24 @@
 {% extends "base.html" %}
 {% block styles %}
 <style>
+span#title {
+	font-size: 20px;
+}
+.right {
+	float:right;
+}
+
 .rating_star{
 	 background: url('/media/images/star_empty.png') no-repeat;
 	 float:	    left;
 	 height:    28px;
 	 padding: 	2px;
 	 width:		32px;
+}
+
+span.message {
+	font-size: 11px;
+	color: red;
 }
 
 .ratings_vote{
@@ -52,6 +64,34 @@
 <script>
 var currentHumor = new Object();
 
+function validateAddContentForm() {
+	var contentType = $("form#addForm select option:selected").text();
+	var title = document.forms["addForm"]["title"].value;
+	var url = document.forms["addForm"]["url"].value;
+
+	if (title==null || title=="" || url==null || url=="") { //all fields present
+		$("div#addModal div span.message").text("Please fill in the title and URL");
+		return false;
+	}
+
+	//check for correct url format for file type
+	if (contentType=="Video") {
+		//TODO: actually check
+		return true;
+	} else if (contentType=="Image"){
+		var ext = url.substring(url.length-3, url.length);
+
+		if (ext=="jpg" || ext=="png" || ext=="gif")
+			return true;
+		else {
+			$("div#addModal div span.message").text("Only PNG, JPG, and GIF images are allowed.");
+			return false;
+		}
+	}
+
+	return true;
+}
+
 function addOverlay() {
 	var modal = $('#addModal')[0];
 	modal.style.visibility = (modal.style.visibility == "visible") ? "hidden" : "visible";
@@ -64,6 +104,8 @@ function init(){
 	currentHumor.created = '{{ humorContent.created }}';
 	currentHumor.avgRating = {{ humorContent.avgRating }};
 	currentHumor.numRatings = {{ humorContent.numRatings }};
+	currentHumor.msg = '{{ humorContent.message }}';
+
 	{% if rating %}
 	currentHumor.rating = {{rating}};
 	{% else %}
@@ -78,12 +120,28 @@ function init(){
 
 function updateImage(result){
 	currentHumor = result;
-
+	console.log(currentHumor);
+	console.log(result);
 	if(result.rating)
 		currentHumor.rating = result.rating;
 	else
 		currentHumor.rating = 0;
+
+	$('td#contentCell #humorContent').remove();
+	var newHTML;
+	
+	if(result.contentType=='Image') {
+		newHTML = "<img height='400' id='humorContent' src='" + currentHumor.url + "'>";
+	} else if (result.contentType=='Video') {
+		newHTML = "<iframe height='450' width='800' id='humorContent' src='http://www.youtube.com/embed/" + currentHumor.url + "'></iframe>";
+	} else {
+		newHTML = "<div id='humorContent'>" + currentHumor.msg + "</div>";
+	}
+
+	$('td#contentCell').append(newHTML);
 	$('img#humorContent').attr('src', currentHumor.url);
+
+	$('span#title').text(currentHumor.title);
 	$('span#createdBy').text(currentHumor.createdBy);
 	
 	if(currentHumor.flag)
@@ -127,12 +185,10 @@ function OutNextButton(x) {
 }
 
 function set_votes(widget) {
-	console.log('hey');
 	$(widget).find('.ratings_vote').removeClass('ratings_vote');
 	var rating = currentHumor.rating;
 	var avg = currentHumor.avgRating;
 	var numRatings = currentHumor.numRatings;
-	console.log(rating);
     
 	if(rating == 0)
 		rating = avg;
@@ -189,6 +245,18 @@ $(document).ready(function() {
 			set_votes(widget);
 		});
     });
+
+	$("form#addForm select").change(function() {
+		var contentType = $("form#addForm select option:selected").text();
+
+		if (contentType=="Image") {
+			$('form#addForm span#content').text("URL: ");
+		} else if (contentType=="Video") {
+			$('form#addForm span#content').text("http://www.youtube.com/watch?v=");
+		} else {
+			$('form#addForm span#content').text("Text: ");
+		}
+	});
 });
 </script>
 {% endblock %}
@@ -196,11 +264,18 @@ $(document).ready(function() {
 
 <div id="addModal" class="overlay">
 	<div>
-		<form method="post" action="addContent">{% csrf_token %} 
+		<form name="addForm" id="addForm" method="post" action="addContent" onsubmit="return validateAddContentForm()">{% csrf_token %} 
+			Content Type: 			
+			<select name="content_type">
+				<option>Image</option>
+				<option>Video</option>
+				<option>Text</option>
+			</select><br />
 			Title: <input type ="text" name = "title" size = "15" /><br />
-			URL: <input type="text" name = "url" size = "15"/><br />
+			<span id="content">URL: </span><input type="text" name = "url" size = "15"/><br />
 			<input type = "submit" value = "Submit" class = "LoginButton"/>
 		</form>
+		<span class="message"></span><br />
 		<button id="close" onclick="addOverlay()" class="LoginButton">Cancel</button>
 	</div>
 </div>
@@ -212,13 +287,26 @@ $(document).ready(function() {
 <div id = "Object" class="CtrObj">
 	<table>
 		<tr>
+			<td></td>
+			<td>
+				<span id="title">{{humorContent.title}}<span>
+			</td>
+			<td></td>
+		</tr>
+		<tr>
 			<td>
 				<div id = "prevButton">	
 					<img onmousemove="OnPrevButton(this)" onmouseout = "OutPrevButton(this)" onclick="showPrev()" border = "0" src = "/media/images/prev.png" alt = "Arrow" width = "50" height = "50" style = "opacity: 0.5; filter:alpha(opacity=40)">
 				</div>
 			</td>
-			<td>
+			<td id="contentCell">
+				{% if humorContent.contentType|stringformat:"s" == "Image" %}
 				<img src="{{ humorContent.url }}" height = "400" id="humorContent"/>
+				{% elif humorContent.contentType|stringformat:"s" == "Video" %}
+				<iframe height='450' width='800' src="http://www.youtube.com/embed/{{ humorContent.url }}" id="humorContent"></iframe>
+				{% else %}
+				<div id="humorContent">{{ humorContent.message }}</div>
+				{% endif %}
 			</td>
 			<td>
 				<div id = "nextButton">	
@@ -227,24 +315,32 @@ $(document).ready(function() {
 			</td>
 		</tr>
 		<tr>
-			Created By: <span id="createdBy">{{ humorContent.createdBy }}</span>
-		</tr>
-		<tr>
 			<td></td>
 			<td>
-				<div id="rating" class="rating_widget">
-					<div value="1" class="star_1 rating_star"></div>
-					<div value="2" class="star_2 rating_star"></div>
-					<div value="3" class="star_3 rating_star"></div>
-					<div value="4" class="star_4 rating_star"></div>
-					<div value="5" class="star_5 rating_star"></div>
-					<div class="total_vote">Total Votes:  <span id="totalNum"></span></div>
-					<div class="avg_vote">Average Vote:  <span id="avgVote"></span></div>
-				</div>
+				<table width="100%">
+					<tr>
+						<td>
+							<div id="rating" class="rating_widget">
+								<div value="1" class="star_1 rating_star"></div>
+								<div value="2" class="star_2 rating_star"></div>
+								<div value="3" class="star_3 rating_star"></div>
+								<div value="4" class="star_4 rating_star"></div>
+								<div value="5" class="star_5 rating_star"></div>
+								<div class="total_vote">Total Votes:  <span id="totalNum"></span></div>
+								<div class="avg_vote">Average Vote:  <span id="avgVote"></span></div>
+							</div>
+						</td>
+						<td>
+							<p class="right">Submitted By: <span id="createdBy">{{ humorContent.createdBy }}</span></p>
+						</td>
+					</td>
+				</table>
 			</td>
+			<td>
 			{% if user.is_authenticated %}
-			<td><button id="flagButton">Flag</button></td>
+				<button id="flagButton">Flag</button>
 			{% endif %}
+			</td>
 		</tr>
 	</table>    	
 </div>

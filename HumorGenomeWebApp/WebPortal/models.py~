@@ -10,7 +10,7 @@ class Rating(models.Model):
 	flag = models.BooleanField(default=False);
 
 class HumorContent(models.Model):
-	url = models.CharField(max_length=150, default="")
+	url = models.CharField(max_length=150)
 	contentType = models.CharField(max_length=10)
 	message = models.TextField(default="")
 	title = models.CharField(max_length=150)

@@ -130,15 +130,9 @@ def submitRating(request):
 def getNextHumor(request):
 	if(request.GET.get('id')):
 		humorContents = HumorContent.objects.order_by('id');
-		index = 0;
-
-		for i, j in enumerate(humorContents):
-			if j.id == int(request.GET.get('id')):
-				index = i;
-
-		nextIndex = index + 1;
-		nextIndex = ((nextIndex) % len(humorContents));
-		desiredHumor = humorContents[nextIndex];
+		idNumber = int(request.GET.get('id'));
+		nextId = ((idNumber) % len(humorContents));
+		desiredHumor = humorContents[nextId];
 		result = {}
 		result.update({'id': desiredHumor.id});
 		result.update({'url': desiredHumor.url});
@@ -193,9 +187,9 @@ def getPrevHumor(request):
 			if j.id == int(request.GET.get('id')):
 				index = i;
 
-		nextIndex = index - 1;
-		nextIndex = ((nextIndex) % len(humorContents));
-		desiredHumor = humorContents[nextIndex];
+		idNumber = index - 1;
+		prevId = ((idNumber) % len(humorContents));
+		desiredHumor = humorContents[prevId];
 		result = {}
 		result.update({'id': desiredHumor.id})
 		result.update({'url': desiredHumor.url})

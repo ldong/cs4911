@@ -10,5 +10,5 @@ urlpatterns = patterns('',
     url(r'^addContent', addContent),
     url(r'^register', register),
     url(r'^submitRating', submitRating),
-    url(r'^flagContent', flagContent),
+	url(r'^flagContent', flagContent),
 )
