@@ -6,9 +6,7 @@ body {
 	     background-size: cover;  
 }
 
-#the_footer{
-		padding: 40px;
-}
+
 
 #loginPanel{ 
 		 position: 	absolute;
@@ -28,12 +26,4 @@ body {
 
 .LoginButton{ 
 	     background-color: #EA9A90;
-}
-
-.CtrObj{
-		
-		height: 650px;	
-		width:	900px;
-		top: 50px;
-		left:30px;
 }

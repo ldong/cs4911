@@ -37,6 +37,26 @@ Now you can navigate to the URL given as output to view the web portal. To view 
 branch. (e.g. `http://localhost:8000/admin`). From here, you can access the administrator CRUD for all of the objects
 in the database.
 
+### Inital Database Load
+
+To load the initial humor content to the database, first start up MySQL with the extra 	`--local-infile` parameter.
+
+`mysql -u django -p --local-infile`
+
+Now, switch to the `humor_genome` database and issue the following command. Make sure that your `WebPortal_humorcontent` table
+is empty beforehand.
+
+```
+LOAD DATA LOCAL INFILE '/home/leonard/HumorGenomeWebApp/HumorGenomeWebApp/Humor_DB_Dump.sql' INTO TABLE
+WebPortal_humorcontent FIELDS TERMINATED BY "," OPTIONALLY ENCLOSED BY '"' (url, message, contentType, title, 
+createdBy_id, id, avgRating, numRatings, created, numFlags, flagRatio);
+```
+
+Replace the filepath above with the full absolute filepath to the .sql file in your directory. You can copy it over into /tmp
+or something if you want to make it simple. Before doing this, you should also make sure you have your first user created. If
+you've ran `./manage.py syncdb` before, you should have done this by creating the superuser. The first user in the DB will be
+listed as the creator of the content.
+
 ### Notes
 
 When you first start the application, the database will be empty (when the server is deployed, the database will persist).
