@@ -46,7 +46,11 @@ To load the initial humor content to the database, first start up MySQL with the
 Now, switch to the `humor_genome` database and issue the following command. Make sure that your `WebPortal_humorcontent` table
 is empty beforehand.
 
-`LOAD DATA LOCAL INFILE '/home/leonard/HumorGenomeWebApp/HumorGenomeWebApp/Humor_DB_Dump.sql' INTO TABLE WebPortal_humorcontent FIELDS TERMINATED BY "," OPTIONALLY ENCLOSED BY '"' (url, message, contentType, title, createdBy_id, id, avgRating, numRatings, created, numFlags, flagRatio);`
+```
+LOAD DATA LOCAL INFILE '/home/leonard/HumorGenomeWebApp/HumorGenomeWebApp/Humor_DB_Dump.sql' INTO TABLE
+WebPortal_humorcontent FIELDS TERMINATED BY "," OPTIONALLY ENCLOSED BY '"' (url, message, contentType, title, 
+createdBy_id, id, avgRating, numRatings, created, numFlags, flagRatio);
+```
 
 Replace the filepath above with the full absolute filepath to the .sql file in your directory. You can copy it over into /tmp
 or something if you want to make it simple. Before doing this, you should also make sure you have your first user created. If
