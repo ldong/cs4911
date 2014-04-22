@@ -1,0 +1,111 @@
+<html lang="en">
+<head>
+<link rel="stylesheet" href="/media/css/main.css">
+
+<style>
+.overlay {
+	visibility: hidden;
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	width: 100%;
+	height: 100%;
+	text-align: center;
+	z-index: 1000;
+	background: rgba(0,0,0,0.8);
+}
+
+.overlay div {
+	width: 450px;
+	margin: 100px auto;
+	background-color: #fff;
+	border: 1px solid #000;
+	border-radius: 10px;
+	padding: 15px;
+	text-align: center;
+	opacity: 1.0;
+}
+
+h1 {
+	color:#7E8383;text-align: Left;
+	background-image: url(/media/images/head.png);
+	-webkit-background-size: cover; 
+	-moz-background-size:cover;
+	-o-background-size:cover;
+	background-size: cover;
+}
+</style> 
+{% block styles %}
+{% endblock %}
+
+<script src="/media/scripts/jquery.js"></script>
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/smoothness/jquery-ui.css" />
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+<script src="/media/scripts/jquery.json-2.4.min.js"></script>
+<script>
+function registerOverlay() {
+	var modal = $('#registerModal')[0];
+	modal.style.visibility = (modal.style.visibility == "visible") ? "hidden" : "visible";
+}
+</script>
+{% block scripts %}
+{% endblock %}
+
+</head>
+
+<body>
+<h1> Welcome to HumorGenome</h1> 
+
+<div id = "loginPanel">
+{% if user.is_authenticated %}
+Welcome back, {{ user.username }}
+<form method="post" action="logout">{% csrf_token %}
+	<input type="submit" value="Logout" class="LoginButton"/>
+</form>
+{% else %}
+<form method="post" action="login">{% csrf_token %} 
+Username: <input type ="text" name = "username" size = "15" maxlength = "20"/> &nbsp;
+Password: <input type="password" name = "password" size = "15"/> &nbsp;
+          <input type = "submit" value = "Login" class = "LoginButton"/> </br> 
+</form>
+<button href="#" onclick='registerOverlay()' class="LoginButton">Register</button>
+<p>Forgot your password? <a href="/WebPortal/resetpassword/">Reset it!</a></p>
+{% endif %}
+</div>
+
+<div id="registerModal" class="overlay">
+	<div>
+		<form method="post" action="register">{% csrf_token %} 
+			Username*: <input type ="text" name = "username" size = "15" /><br />
+			Password*: <input type ="password" name = "password" size = "15" /><br />
+			Email: <input type ="text" name = "email" size = "15" /><br />
+			<input type = "submit" value = "Submit" class = "LoginButton"/>
+		</form>
+		<span style="font-size: 8pt">* Required</span><br />
+		<button id="close" onclick="registerOverlay()" class="LoginButton">Cancel</button>
+	</div>
+</div>
+
+<table>
+    <tr>
+    <td>
+    {% block content %}
+    {% endblock %}
+    </td>
+    </tr>	
+</table>
+
+<table id = "tail">
+		<tr>
+			<td>
+				<img style = "position: absolute; right:10px;" src="/media/images/tail.png" height ="40" width = "960"/>
+			</td>
+		</tr>	
+</table>
+
+</body>
+</html>
+
+
+
+
