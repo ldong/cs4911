@@ -8,7 +8,6 @@ from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.models import User
 from WebPortal.models import HumorContent, Rating
-from WebPortal import recommendation
 from django.db.models import Max
 import numpy as np
 import sys
