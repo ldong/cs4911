@@ -8,6 +8,11 @@ from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.models import User
 from WebPortal.models import HumorContent, Rating
+from WebPortal import recommendation
+from django.db.models import Max
+import numpy as np
+import sys
+from sklearn.decomposition import ProjectedGradientNMF
 
 def archive(request):
 	humorContents = HumorContent.objects.order_by('id');
@@ -213,3 +218,88 @@ def getPrevHumor(request):
 
 		return HttpResponse(simplejson.dumps(result), content_type='application/json');
 	return HttpResponse("BAD");
+
+def getRecommendation(request):
+
+	if(request.GET.get('id')):
+		
+		humorContents = HumorContent.objects.order_by('id');
+
+		max_user_index = Rating.objects.aggregate(Max('user'))['user__max']
+		max_humor_index = Rating.objects.aggregate(Max('humor'))['humor__max']
+
+		ratings = Rating.objects.order_by('humor');
+
+		ratings_matrix_raw = [[0 for n in range(max_humor_index)] for m in range(max_user_index)]
+		ratings_matrix = [[3 for n in range(max_humor_index)] for m in range(max_user_index)]
+
+		for i, j in enumerate(ratings):
+			ratings_matrix[j.user_id-1][j.humor_id-1] = j.rating
+			ratings_matrix_raw[j.user_id-1][j.humor_id-1] = j.rating
+
+		ratings_matrix = np.reshape(ratings_matrix, (max_user_index, max_humor_index))
+
+		recommendedIndex = recommend(ratings_matrix, ratings_matrix_raw, request.user.id-1) + 1 
+
+		index = 0;
+
+		for i, j in enumerate(humorContents):
+			if j.id == recommendedIndex:
+				index = i;
+
+		desiredHumor = humorContents[index];
+		result = {}
+		result.update({'id': desiredHumor.id})
+		result.update({'url': desiredHumor.url})
+		result.update({'title': desiredHumor.title});
+		result.update({'avgRating': desiredHumor.avgRating});
+		result.update({'numRatings': desiredHumor.numRatings});
+		result.update({'createdBy': desiredHumor.createdBy.username});
+		result.update({'msg': desiredHumor.message});
+		result.update({'contentType': desiredHumor.contentType});
+
+		if(request.user.is_authenticated()):
+			curUser = request.user;
+			myRating = Rating.objects.filter(user=curUser).filter(humor=desiredHumor);
+			if(len(myRating) > 0):
+				result.update({'rating': myRating[0].rating});
+				result.update({'flag': myRating[0].flag});
+		
+		return HttpResponse(simplejson.dumps(result), content_type='application/json');
+	return HttpResponse("BAD");
+
+
+def recommend(matrix_3filled, matrix_raw, user, numOfNeighbors=5):
+    
+    	model = ProjectedGradientNMF(n_components=2, init='random', random_state=0)
+    	model.fit(matrix_3filled)
+    	transformed = np.dot(model.fit_transform(matrix_3filled), model.components_)
+    
+   	neighbors=[]
+    	distances = np.sum((transformed-transformed[user])**2, axis=1)
+
+    	for x in xrange(numOfNeighbors):
+        	distances[np.argmin(distances)] = sys.float_info.max
+        	neighbors.append(np.argmin(distances))
+
+    	average=[0.0]*transformed.shape[1]
+    	for x in xrange(numOfNeighbors):
+        	average += transformed[neighbors[x]]
+    	average = average/numOfNeighbors
+    	unratedItems=[]
+    	for x in xrange(np.shape(matrix_raw)[1]):
+        	if matrix_raw[user][x] == 0:
+            		unratedItems.append(x)
+    
+
+    	if len(unratedItems) is 0:
+        	item = np.argmax(average)
+        	return item
+    	else:
+        	maxAverage = 0
+        	item = np.argmax(average)
+        	for x in xrange(len(unratedItems)):
+            		if average[unratedItems[x]] > maxAverage:
+                		maxAverage = average[unratedItems[x]] 
+                		item = unratedItems[x]
+        	return item

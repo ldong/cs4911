@@ -64,6 +64,12 @@ To get around this, navigate to the admin portal and add a few objects to the da
 the main page (`http://localhost:8000/WebPortal/`). From here, you should be able to login, rate the humor content you just 
 added, and navigate between each of them.
 
+### Installing Numpy and Scikit-learn
+
+In order to make the recommendation system work, you need to install Numpy and Scikit-learn. 
+You can install them however you want it, but here is an easy reference for Linux users:
+`http://scikit-learn.org/stable/install.html`
+
 ### MAC users
 
 1. install virtualenvwrapper, django
