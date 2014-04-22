@@ -88,7 +88,13 @@ USE_TZ = True
 
 STATIC_URL = '/media/'
 
+<<<<<<< HEAD
 # Email Settings
+=======
+# Email Settings : To get the email output on a terminal use the following command
+# python -m smtpd -n -c DebuggingServer localhost:1025
+# https://docs.djangoproject.com/en/dev/topics/email/
+>>>>>>> a903343075137b35c6e8210dc83f6c07a1328105
 
 EMAIL_HOST = 'localhost'
 EMAIL_PORT = 1025
