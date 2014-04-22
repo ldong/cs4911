@@ -164,6 +164,13 @@ function showPrev() {
 	});
 }
 
+function showRecommendation(){
+	$.get('getRecommendation', {id : currentHumor.id}, function(result) {
+		updateImage(result);
+	});
+
+}
+
 function OnPrevButton(x) {
     x.style.height= "75px";
     x.style.width= "75px"; 
@@ -282,6 +289,7 @@ $(document).ready(function() {
 
 {% if user.is_authenticated %}
 <button href="#" onclick='addOverlay()' class="LoginButton">Add content</button>
+<button href="#" onclick='showRecommendation()' class="LoginButton">Recommend</button>
 {% endif %}
 
 <div id = "Object" class="CtrObj">
