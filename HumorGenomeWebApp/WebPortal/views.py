@@ -230,11 +230,9 @@ def getPrevHumor(request):
 		for i, j in enumerate(humorContents):
 			if j.id == int(request.GET.get('id')):
 				index = i;
-		print request.GET.get('id')
-		print index
+
 		nextIndex = index - 1;
 		nextIndex = ((nextIndex) % len(humorContents));
-		print nextIndex
 		desiredHumor = humorContents[nextIndex];
 
 		result = {}
