@@ -116,12 +116,16 @@ function init(){
 		currentHumor.flag = true;
 	else
 		currentHumor.flag = false;
+
+	if('{{ favorite }}' == 'True')
+		currentHumor.favorite = true;
+	else
+		currentHumor.favorite = false;
 }
 
 function updateImage(result){
 	currentHumor = result;
-	console.log(currentHumor);
-	console.log(result);
+
 	if(result.rating)
 		currentHumor.rating = result.rating;
 	else
@@ -141,13 +145,18 @@ function updateImage(result){
 	$('td#contentCell').append(newHTML);
 	$('img#humorContent').attr('src', currentHumor.url);
 
-
+	$('span#title').text(currentHumor.title);
 	$('span#createdBy').text(currentHumor.createdBy);
 	
 	if(currentHumor.flag)
 		$('#flagButton').text('Unflag')
 	else
 		$('#flagButton').text('Flag')
+
+	if(currentHumor.favorite)
+		$('#favorite').text('Unfavorite')
+	else
+		$('#favorite').text('Favorite')
 
 	set_votes($('.rating_widget'));
 }
@@ -162,6 +171,13 @@ function showPrev() {
 	$.get('getPrevHumor', {id : currentHumor.id}, function(result) {
 		updateImage(result);
 	});
+}
+
+function showRecommendation(){
+	$.get('getRecommendation', {id : currentHumor.id}, function(result) {
+		updateImage(result);
+	});
+
 }
 
 function OnPrevButton(x) {
@@ -210,6 +226,11 @@ $(document).ready(function() {
 	else
 		$('#flagButton').text('Flag')
 
+	if(currentHumor.favorite)
+		$('#favorite').text('Unfavorite')
+	else
+		$('#favorite').text('Favorite')
+
     $('.rating_star').hover(
         // Handles the mouseover
         function() {
@@ -231,6 +252,15 @@ $(document).ready(function() {
 			$('#flagButton').text('Unflag')
 		else
 			$('#flagButton').text('Flag')
+	});
+
+	$('#favorite').bind('click', function() {
+		$.get('favoriteContent', {id: currentHumor.id}, function(result) {});
+		var cur = $('#favoriteContent').text();
+		if(cur == 'Favorite')
+			$('#favorite').text('Unfavorite')
+		else
+			$('#favorite').text('Favorite')
 	});
     
     
@@ -282,6 +312,7 @@ $(document).ready(function() {
 
 {% if user.is_authenticated %}
 <button href="#" onclick='addOverlay()' class="LoginButton">Add content</button>
+<button href="#" onclick='showRecommendation()' class="LoginButton">Recommend</button>
 {% endif %}
 
 <div id = "Object" class="CtrObj">
@@ -338,7 +369,8 @@ $(document).ready(function() {
 			</td>
 			<td>
 			{% if user.is_authenticated %}
-				<button id="flagButton">Flag</button>
+				<button id="flagButton">Flag</button><br />
+				<button id="favorite">Favorite</button><br />
 			{% endif %}
 			</td>
 		</tr>

@@ -9,6 +9,7 @@ class Rating(models.Model):
 	user = models.ForeignKey(User);
 	humor = models.ForeignKey('HumorContent');
 	flag = models.BooleanField(default=False);
+	favorite = models.BooleanField(default=False);
 
 class HumorContent(models.Model):
 	url = models.CharField(max_length=150, default="")

@@ -16,5 +16,6 @@ urlpatterns = patterns('',
     url(r'^reset/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$', auth_views.password_reset_confirm, name='password_reset_confirm'),
     url(r'^reset/done/$', auth_views.password_reset_complete, name='password_reset_complete'),
     url(r'^flagContent', flagContent),
+    url(r'^favoriteContent', favoriteContent),
     url(r'^getRecommendation/', getRecommendation),
 )

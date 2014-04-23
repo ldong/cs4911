@@ -18,12 +18,14 @@ def archive(request):
 	mostRecent = humorContents[len(humorContents) - 1];
 	c = RequestContext(request, { 'humorContent': mostRecent });
 
+	#attach extra data if user is logged in
 	if(request.user.is_authenticated()):
 		curUser = request.user;
 		myRating = Rating.objects.filter(user=curUser).filter(humor=mostRecent);
 		if(len(myRating) > 0):
 			myRating = myRating[0];
 			c.update({'rating': myRating.rating});
+			c.update({'favorite': myRating.favorite});
 			c.update({'flag': myRating.flag});
 
 	t = loader.get_template("archive.html")
@@ -55,9 +57,34 @@ def login(request):
 		if(len(myRating) > 0):
 			myRating = myRating[0];
 			c.update({'rating': myRating.rating});
+			c.update({'favorite': myRating.favorite});
 			c.update({'flag': myRating.flag});
 
 	return HttpResponse(t.render(c))
+
+def favoriteContent(request):
+	if(request.GET.get('id') and request.user):
+		myId = int(request.GET.get('id'));
+		curUser = request.user;
+		humorContent = HumorContent.objects.get(pk=myId);
+		myRating = Rating.objects.filter(user=curUser).filter(humor=humorContent);
+
+		if(len(myRating) > 0): #rating exists
+			myRating = myRating[0];
+			myRating.favorite = not myRating.flag;			
+			myRating.save();
+
+		else: #new rating
+			myRating = Rating();
+			myRating.user = curUser;
+			myRating.humor = humorContent;
+			myRating.favorite = True;
+			myRating.flag = False;
+			myRating.rating = 0;
+			myRating.save();
+
+		return HttpResponse("OKAY");
+	return HttpResponse("BAD");
 
 def flagContent(request):
 	if(request.GET.get('id') and request.user):
@@ -65,7 +92,7 @@ def flagContent(request):
 		curUser = request.user;
 		humorContent = HumorContent.objects.get(pk=myId);
 		myRating = Rating.objects.filter(user=curUser).filter(humor=humorContent);
-		print "hey1"
+
 		if(len(myRating) > 0): #rating exists
 			myRating = myRating[0];
 			myRating.flag = not myRating.flag;
@@ -76,6 +103,7 @@ def flagContent(request):
 				humorContent.numFlags -= 1;
 			
 			myRating.save();
+
 		else: #new rating
 			myRating = Rating();
 			myRating.user = curUser;
@@ -108,13 +136,16 @@ def submitRating(request):
 			myRating = myRating[0];
 			oldRating = myRating.rating;
 			myRating.rating = newRating;
-			if(oldRating is not None and int(oldRating) != 0):
+
+			#Rating object exists, but user has only flagged or favorited content
+			if(oldRating is not None and int(oldRating) != 0): 
 				newAverage = ((oldAverage * weight) + newRating - oldRating) / (humorContent.numRatings);
 			else:
 				newAverage = ((oldAverage * weight) + newRating) / (humorContent.numRatings + 1);
 				humorContent.numRatings = humorContent.numRatings + 1;
 
 			myRating.save();
+
 		else: #first rating from this user
 			myRating = Rating(rating=newRating);
 			myRating.user = curUser;
@@ -156,6 +187,7 @@ def getNextHumor(request):
 			myRating = Rating.objects.filter(user=curUser).filter(humor=desiredHumor);
 			if(len(myRating) > 0):
 				result.update({'rating': myRating[0].rating});
+				result.update({'favorite': myRating[0].favorite});
 				result.update({'flag': myRating[0].flag});			
 
 		return HttpResponse(simplejson.dumps(result), content_type='application/json');
@@ -165,10 +197,12 @@ def register(request):
 	t = loader.get_template("archive.html")
 	user = User.objects.create_user(request.POST['username'], request.POST['email'], request.POST['password']);
 	user.save();
-	humorContents = HumorContent.objects.order_by('id'); #do I have to login?
+	humorContents = HumorContent.objects.order_by('id');
 	mostRecent = humorContents[len(humorContents) - 1];
+
 	user = authenticate(username=request.POST['username'], password=request.POST['password'])
 	c = RequestContext(request, { 'humorContent': mostRecent });
+
 	if user is not None:
 		if user.is_active:
 			auth_login(request, user)
@@ -178,10 +212,12 @@ def register(request):
 def addContent(request):
 	t = loader.get_template("archive.html")
 	newContent = HumorContent(contentType=request.POST['content_type'],title=request.POST['title'], createdBy=request.user);
+
 	if (newContent.contentType=="Text"):
 		newContent.message=request.POST['url'];
 	else:
 		newContent.url=request.POST['url'];
+
 	newContent.save();
 	c = RequestContext(request, { 'humorContent': newContent });
 	return HttpResponse(t.render(c))
@@ -194,10 +230,13 @@ def getPrevHumor(request):
 		for i, j in enumerate(humorContents):
 			if j.id == int(request.GET.get('id')):
 				index = i;
-
+		print request.GET.get('id')
+		print index
 		nextIndex = index - 1;
 		nextIndex = ((nextIndex) % len(humorContents));
+		print nextIndex
 		desiredHumor = humorContents[nextIndex];
+
 		result = {}
 		result.update({'id': desiredHumor.id})
 		result.update({'url': desiredHumor.url})
@@ -207,12 +246,13 @@ def getPrevHumor(request):
 		result.update({'createdBy': desiredHumor.createdBy.username});		
 		result.update({'msg': desiredHumor.message});		
 		result.update({'contentType': desiredHumor.contentType});
-		
 		if(request.user.is_authenticated()):
 			curUser = request.user;
 			myRating = Rating.objects.filter(user=curUser).filter(humor=desiredHumor);
+			
 			if(len(myRating) > 0):
 				result.update({'rating': myRating[0].rating});
+				result.update({'favorite': myRating[0].favorite});
 				result.update({'flag': myRating[0].flag});
 
 		return HttpResponse(simplejson.dumps(result), content_type='application/json');
@@ -262,6 +302,7 @@ def getRecommendation(request):
 			myRating = Rating.objects.filter(user=curUser).filter(humor=desiredHumor);
 			if(len(myRating) > 0):
 				result.update({'rating': myRating[0].rating});
+				result.update({'favorite': myRating[0].favorite});
 				result.update({'flag': myRating[0].flag});
 		
 		return HttpResponse(simplejson.dumps(result), content_type='application/json');
