@@ -29,6 +29,21 @@ HumorContents. For each user/content pair, there may also be a Rating object.
 <UML Diagram>
 ![alt tag](http://oi59.tinypic.com/ac742d.jpg)
 
+### User Interface
+The UI for this project is fairly simple. There's only one main page that users will see. It follows a few common
+design principles, so it is somewhat intuitive. All login/registration options are in the top right corner of the
+screen. If the user chooses to register, a modal will pop up in the middle of the page; registering will automatically
+log the user in. The modal can be closed if desired.
+
+The central object of the page is the humor content (image, video, or text). To either side of the humor content is
+a previous/next button that will cycle through the content in the database in sequential order. Near the top left
+of the page are buttons for adding new content or getting a recommended humor content. Adding a new object will
+also utilize a modal similar to registration; submitting the modal will automatically reload the page with the new
+content displayed. Getting a recommendation or cycling through the content will replace the content in-place without
+reloading the page. The rating stars are located below the content to the left, with statistics displayed near it. The
+submitter of the content is displayed along with Flag/Favorite buttons to the bottom right of the content. The title is
+shown above it. A simple header/footer for the page are used.
+
 ## Technical Instructions
 
 ### Setting up MySQL
