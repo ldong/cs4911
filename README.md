@@ -7,6 +7,16 @@ The HumorGenome project follows the traditional client-server design. It uses pr
 back-end and web framework (server side), MySQL to store all of the database entities, and the usual array of 
 JavaScript, CSS, etc. for the web pages/templates (client side).
 
+![alt tag](http://oi62.tinypic.com/33f40vt.jpg)
+
+The users interact with the application by navigation to the HTML templates in any Internet browser. This will send
+a GET request to the web server, causing the Django framework to render the appropriate template back, with any
+template tags substituted in the process. When the user makes any further GET or POST requests on the website, this
+request is sent to the Django server, and routed to the appropriate controller method (Python) based on the URL of
+the request. The database is involved when any objects are requested (or saved), which is essentially for all of the controller
+methods. Django provides a simple way of accessing the database with simple Python code, which allows you to avoid
+having to always use native SQL commands. The MySQL database is on the same machine as the Django web framework.
+
 ### Detailed Design
 All of the client-side HTML pages/templates are located under the WebPortal/templates directory. The HumorGenomeWebApp
 directory at the top level contains the settings.py and urls.py Python files. The settings.py file contains important
