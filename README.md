@@ -1,5 +1,36 @@
-HumorGenomeWebApp
-=================
+# HumorGenomeWebApp
+-----------------
+
+## Architecture
+
+The HumorGenome project follows the traditional client-server design. It uses primarily Python and Django for the 
+back-end and web framework (server side), MySQL to store all of the database entities, and the usual array of 
+JavaScript, CSS, etc. for the web pages/templates (client side).
+
+### Detailed Design
+All of the client-side HTML pages/templates are located under the WebPortal/templates directory. The HumorGenomeWebApp
+directory at the top level contains the settings.py and urls.py Python files. The settings.py file contains important
+settings for the Django server such as what modules to load, whether debug mode is active, where static files are
+located, how to connect to the database, and more. The urls.py file here contains the logic for the more basic URL 
+patterns such as static files and the admin page.
+
+The bulk of the code is located under the WebPortal directory. The static files are also located here under the static
+folder (and in the respective sub-folder). The important files at this level are views.py, urls.py, and models.py. The
+models.py file defines all of the database schema objects and also sets up the admin CRUD views for them. The urls.py
+file has all of the URLs that users could POST or GET to. Finally, the views.py file has all of the methods that
+the urls.py file connects to. The majority of the logic for the system is located in this file. Each of the methods here
+that correspond to GET/POST requests will take in data representing this request, handle it, and then generate a new
+page or return data to the same page in the form of a JSON response.
+
+### Database Schema/Storage
+The database schema is fairly simple and straight-forward. There are objects to represent Users as well as 
+HumorContents. For each user/content pair, there may also be a Rating object.
+
+<UML Diagram>
+![alt tag](http://oi59.tinypic.com/ac742d.jpg)
+
+## Technical Instructions
+
 ### Setting up MySQL
 These instructions will assume that you're using a Linux-based OS (the process is much different on Windows). First,
 you will need to install the `mysql-server` package:
