@@ -27,9 +27,7 @@ The database schema is fairly simple and straight-forward. There are objects to 
 HumorContents. For each user/content pair, there may also be a Rating object.
 
 <UML Diagram>
-![alt tag](http://oi59.tinypic.com/ac742d.jpg)
-
-Note: The Rating table also has a "humor: HumorContent" field that was accidentally left out of the above UML diagram.
+![alt tag](http://oi62.tinypic.com/10h98bq.jpg)
 
 ### User Interface
 The UI for this project is fairly simple. There's only one main page that users will see. It follows a few common
