@@ -29,6 +29,8 @@ HumorContents. For each user/content pair, there may also be a Rating object.
 <UML Diagram>
 ![alt tag](http://oi59.tinypic.com/ac742d.jpg)
 
+Note: The "humor: HumorContent" field was accidentally left out of the above UML diagram.
+
 ### User Interface
 The UI for this project is fairly simple. There's only one main page that users will see. It follows a few common
 design principles, so it is somewhat intuitive. All login/registration options are in the top right corner of the
