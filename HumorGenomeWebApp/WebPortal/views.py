@@ -262,20 +262,25 @@ def getRecommendation(request):
 		
 		humorContents = HumorContent.objects.order_by('id');
 
+		# Get dimensions of the ratings matrix
 		max_user_index = Rating.objects.aggregate(Max('user'))['user__max']
 		max_humor_index = Rating.objects.aggregate(Max('humor'))['humor__max']
 
 		ratings = Rating.objects.order_by('humor');
 
 		ratings_matrix_raw = [[0 for n in range(max_humor_index)] for m in range(max_user_index)]
+		# Fill in 3's for the empty ratings
 		ratings_matrix = [[3 for n in range(max_humor_index)] for m in range(max_user_index)]
 
+		# Populate the ratings matrix
 		for i, j in enumerate(ratings):
 			ratings_matrix[j.user_id-1][j.humor_id-1] = j.rating
 			ratings_matrix_raw[j.user_id-1][j.humor_id-1] = j.rating
 
 		ratings_matrix = np.reshape(ratings_matrix, (max_user_index, max_humor_index))
 
+		# Note that id's in the database starts from 1. 
+		# We need to subtract 1 from user.id then add 1 to the recommended index to get the right index for the recommendation.
 		recommendedIndex = recommend(ratings_matrix, ratings_matrix_raw, request.user.id-1) + 1 
 
 		index = 0;
@@ -308,31 +313,40 @@ def getRecommendation(request):
 
 
 def recommend(matrix_3filled, matrix_raw, user, numOfNeighbors=5):
-    
+    	
+	# The following 3 lines uses Scikit-learn. For more information, refer to the documentation link in README.
     	model = ProjectedGradientNMF(n_components=2, init='random', random_state=0)
     	model.fit(matrix_3filled)
+
+	# transformed matrix is the result of non-negative matrix factorization, and we will use this for the recommendations
     	transformed = np.dot(model.fit_transform(matrix_3filled), model.components_)
     
    	neighbors=[]
+	# Calculate distances from the current user to every other users.
     	distances = np.sum((transformed-transformed[user])**2, axis=1)
 
+	# Find nearest neighbors.
     	for x in xrange(numOfNeighbors):
         	distances[np.argmin(distances)] = sys.float_info.max
         	neighbors.append(np.argmin(distances))
 
+	# Get an average for nearest neighbors. average is a vector containing the average rating for each humor.
     	average=[0.0]*transformed.shape[1]
     	for x in xrange(numOfNeighbors):
         	average += transformed[neighbors[x]]
     	average = average/numOfNeighbors
+
+	# Find the unrated items for current users.
     	unratedItems=[]
     	for x in xrange(np.shape(matrix_raw)[1]):
         	if matrix_raw[user][x] == 0:
             		unratedItems.append(x)
     
-
+	# If there are no unrated items, just return an item with max average rating.
     	if len(unratedItems) is 0:
         	item = np.argmax(average)
         	return item
+	# Else, return an unrated item with max average rating.
     	else:
         	maxAverage = 0
         	item = np.argmax(average)

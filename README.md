@@ -70,6 +70,24 @@ In order to make the recommendation system work, you need to install Numpy and S
 You can install them however you want it, but here is an easy reference for Linux users:
 `http://scikit-learn.org/stable/install.html`
 
+### About The Recommendation System
+
+It is the best to illustrate with an example. Say Bob and Alice both rated 10 humors, and not Jihoon wants to rate the humor. 
+He rates 7 humors and clicks the recommend button. The system finds an unrated humor that is close to Bob and Alice's favor.
+Jihoon clicks the button again, the system finds the next unrated humor that is close to Bob and Alice's favor, and so on.
+
+More technically, we are using the collaborative filtering algorithm, specifically non-negative matrix factorization with nearest neighbor, 
+to recommend jokes. For more information about non-negative matrix factorization and its use, please refer to these documentations:
+```
+http://scikit-learn.org/stable/modules/decomposition.html#non-negative-matrix-factorization-nmf-or-nnmf 
+http://scikit-learn.org/stable/modules/generated/sklearn.decomposition.ProjectedGradientNMF.html#sklearn.decomposition.ProjectedGradientNMF
+```
+Currently, the system searches for 5 nearest neighbors. Using the transformed matrix (the result of non-negative matrix factorization),
+it calculates averages of 5 neighbors, gets the maximum average rating, then recommends that humor to the current user.
+It is important to note that we are filling missing ratings with 3's because our rating values range from 1 to 5 and 3's are the average of those.
+There can be many tweaks to the algorithm such as filling in average ratings for missing ratings instead of 3's, using different number of neighbors,
+and using different settings for non-negative matrix factorization. Customizing those will be included in the future work.
+
 ### MAC users
 
 1. install virtualenvwrapper, django
