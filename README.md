@@ -1,6 +1,16 @@
 # HumorGenomeWebApp
 -----------------
 
+#### Authors
+
+1. Leonard Smith: lsmith62 AT gatech.edu
+
+2. Lin Dong: lindong AT gatech.edu
+
+3. Jihoon Lee
+
+4. Qiang Guo
+
 ## Architecture
 
 The HumorGenome project follows the traditional client-server design. It uses primarily Python and Django for the 
